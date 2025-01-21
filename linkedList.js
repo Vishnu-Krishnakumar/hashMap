@@ -49,11 +49,19 @@ function LinkedList() {
     }
 
     const pop = () => {
-        if (headNode.nextNode === null) headNode = null;
-        else removeLast(headNode).nextNode = null;
+       let removed;
+       if(headNode === null) return null;
+       if(headNode.nextNode === null){
+        removed = headNode;
+        headNode = null;
+        return removed;
+       }
+       removed = removeLast(headNode);
+       return removed;
+       
     }
 
-    const contains =(key) => {
+    const contains = (key) => {
         return search(headNode, key);
     }
 
@@ -62,8 +70,8 @@ function LinkedList() {
     }
 
     const toString = () => {
-        newNode = headNode;
-        string = `(${newNode.nodeKey}) -> `;
+        let newNode = headNode;
+        let string = `(${newNode.nodeKey}) -> `;
         while (newNode.nextNode !== null) {
             newNode = newNode.nextNode;
             string += `(${newNode.nodeKey}) -> `;
@@ -71,18 +79,19 @@ function LinkedList() {
         string += `null`;
         return string;
     }
-    const findKey = (node,key)=>{
+
+    const findKey = (key, node = headNode)=>{
         if(node.nodeKey === key){
           return node;
         }
         else {
-          return search(node.nextNode,key)
+          return findKey(key,node.nextNode)
         }
     }
     const insertAt = (key,value,index) => {
         let search = headNode;
         let newNode = node(key,value);
-        console.log(index);
+       
         if (index >= listSize) {
             return console.log(`The list has a size of ${listSize}, the index starts from 0!`);
         }
@@ -131,7 +140,12 @@ function LinkedList() {
     }
 
     function removeLast(node) {
-        if (node.nextNode.nextNode === null) return node;
+       
+        if (node.nextNode.nextNode === null){
+            let removed = node.nextNode;
+            node.nextNode = null;
+            return removed;
+        } 
         else {
             return removeLast(node.nextNode);
         }
@@ -142,20 +156,29 @@ function LinkedList() {
         else {
             return searchTail(node.nextNode);
         }
-    function remove(key,value){
-      let index = findIndex(headNode,key,0);
-      let node = headNode;
-      if(headNode.nextNode === null){
-         headNode = null;
-         return;
-      }
-      for(let i = 0; i <= index; i++){
+    }
+
+    const remove = (key) => {
+        let index = findIndex(headNode,key,0);
         
+        let node = headNode;
+        if(headNode.nextNode === null){
+           headNode = null;
+           return;
+        }
+        for(let i = 0; i < index-1; i++){
+          node = node.nextNode;
+        }
+       
+        if(node.nextNode.nextNode !== null){
+          node.nextNode = node.nextNode.nextNode;
+        }
+        else{
+          node.nextNode = null;
+        }
       }
 
-    }
-    }
-    return {append, prepend, size, head, tail, at, pop, contains, find, toString,insertAt,findKey };
+    return {append, prepend, size, head, tail, at, pop, contains, find, toString,insertAt,findKey,remove};
 }
 
 function node(key,value) {
